@@ -68,6 +68,9 @@ func buildTestRepoTemplate() (string, error) {
 		{"init", "-b", "main"},
 		{"config", "user.name", "Test User"},
 		{"config", "user.email", "test@test.com"},
+		// The fixtures assert exact bytes across worktree checkouts. Do not let
+		// a Windows runner's global core.autocrlf convert committed LF to CRLF.
+		{"config", "core.autocrlf", "false"},
 		{"add", "."},
 		{"commit", "-m", "initial"},
 	} {

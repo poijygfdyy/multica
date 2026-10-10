@@ -521,6 +521,9 @@ func TestFinalizeKeepsWorktreeWhenCommitFails(t *testing.T) {
 	if err == nil {
 		t.Fatal("Finalize returned nil error after the commit failed")
 	}
+	if outcome.Branch != "" {
+		t.Errorf("Branch = %q, want empty: commit failure did not deliver the branch", outcome.Branch)
+	}
 	if outcome.PreservedPath != wt.Path {
 		t.Errorf("PreservedPath = %q, want %q", outcome.PreservedPath, wt.Path)
 	}

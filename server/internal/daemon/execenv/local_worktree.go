@@ -612,6 +612,7 @@ func (w *LocalWorktree) Finalize(logger *slog.Logger) (LocalWorktreeOutcome, err
 	if dirty {
 		committed, err := w.commitAll(logger)
 		if err != nil {
+			outcome.Branch = "" // No recorded delivery; the preserved worktree is authoritative.
 			outcome.PreservedPath = w.Path
 			if logger != nil {
 				logger.Error("execenv: could not commit the agent's changes; keeping the worktree so the work is recoverable",

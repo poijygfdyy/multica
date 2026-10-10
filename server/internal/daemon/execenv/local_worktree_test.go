@@ -68,9 +68,6 @@ func buildTestRepoTemplate() (string, error) {
 		{"init", "-b", "main"},
 		{"config", "user.name", "Test User"},
 		{"config", "user.email", "test@test.com"},
-		// The fixtures assert exact bytes across worktree checkouts. Do not let
-		// a Windows runner's global core.autocrlf convert committed LF to CRLF.
-		{"config", "core.autocrlf", "false"},
 		{"add", "."},
 		{"commit", "-m", "initial"},
 	} {
@@ -1007,6 +1004,8 @@ func TestPrepareLocalWorktreeHandsConflictingUserEditsToTheAgent(t *testing.T) {
 func TestConflictResolvedByTheAgentIsDeliveredAndNotReplayedAgain(t *testing.T) {
 	t.Parallel()
 	repo := newTestRepo(t)
+	// This test asserts exact LF bytes after repeated Git worktree checkouts.
+	gitRun(t, repo, "config", "core.autocrlf", "false")
 	writeFile(t, filepath.Join(repo, "tracked.txt"), "A\n")
 
 	first := prepareTurn(t, repo, "MUL-6881", turnOneTask)
@@ -1587,6 +1586,8 @@ func TestFinalizeRefusesToRecordADeliveryThatResetPastItsBaseline(t *testing.T) 
 func TestFinalizeFastForwardsConversationBranchToOffBranchDelivery(t *testing.T) {
 	t.Parallel()
 	repo := newTestRepo(t)
+	// Git for Windows may default to CRLF checkout; keep the LF fixture exact.
+	gitRun(t, repo, "config", "core.autocrlf", "false")
 
 	wt := prepareTurn(t, repo, "MUL-8541", turnOneTask)
 	conversationTip := gitRun(t, repo, "rev-parse", wt.Branch)
